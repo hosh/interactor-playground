@@ -1,0 +1,26 @@
+GIT
+  remote: git://github.com/lasseebert/kase.git
+  revision: bc94c7add9dd10a6b13eab2253978ba7af1f0e65
+  branch: 6_dsl_changes
+  specs:
+    kase (0.1.2)
+
+PATH
+  remote: ../interactor
+  specs:
+    interactor (3.1.0)
+
+GEM
+  specs:
+    rlet (0.7.0)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  interactor!
+  kase!
+  rlet
+
+BUNDLED WITH
+   1.11.2
