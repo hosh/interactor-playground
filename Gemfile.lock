@@ -1,11 +1,15 @@
-PATH
-  remote: ../interactor
+GIT
+  remote: git://github.com/hosh/interactor.git
+  revision: 1e9335b0af0a88edc69fba1ce9391fcb7af84acc
+  branch: hosh/experiment-composability
   specs:
     interactor (3.1.0)
       activesupport (~> 4.2)
 
-PATH
-  remote: ../kase
+GIT
+  remote: git://github.com/hosh/kase.git
+  revision: b7cac1c481a55677121c1afa435e8aef3f4f86cb
+  branch: hosh/caller-experiment
   specs:
     kase (0.1.0)
 
