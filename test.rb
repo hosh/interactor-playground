@@ -7,6 +7,7 @@ class ChargeIntakeFee
   include Interactor
 
   def call(context = {})
+    return [:error, "Invalid!"] if context[:invalid]
     puts "[charge_intake_fee] execute #{context[:inquiry].id}"
     [:ok, context]
   end
@@ -18,17 +19,21 @@ class IntakeMailer
   end
 end
 
-inquiry = Map.new(id: '123')
+def charge(inquiry)
+  # Let's try composition
+  # With Simple, as long as no exception is raised, then return [:ok, context]
+  # But if anything goes wrong, such as argument error, or whatver, then return the exception
+  # This is really meant for something to override the #handle_error method.
 
-# Let's try composition
-sequence = ChargeIntakeFee \
-           | Interactors::Simple.new { |context| IntakeMailer.receipt(inquiry: context[:inquiry]) }
+  sequence = ChargeIntakeFee \
+             | Interactors::Simple.new { |context| IntakeMailer.receipt(inquiry: context[:inquiry]) }
 
-# With Simple, as long as no exception is raised, then return [:ok, context]
-# But if anything goes wrong, such as argument error, or whatver, then return the exception
-# This is really meant for something to override the #handle_error method.
+  Kase.kase sequence.call(inquiry: inquiry) do
+    on(:ok)    { |_| puts "Thank you" }
+    on(:error) { |reason| puts "Error: #{reason}" }
+  end
+end
 
-puts sequence.inspect
-puts sequence.interactions.inspect
+charge(Map.new(id: '123'))
+charge(Map.new(id: '123', invalid: true))
 
-sequence.call(inquiry: inquiry)
