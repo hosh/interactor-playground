@@ -12,15 +12,20 @@ class ChargeIntakeFee
   end
 end
 
-class SendReceipt
-  include Interactor
+# Generic Mail Interactor
+class SendMail
+  attr_reader :mailer_klass, :mailer_method
 
-  def call(context = {})
-    IntakeMailer.receipt(inquiry: context[:inquiry])
+  def initialize(klass, method_name)
+    @mailer_klass = klass
+    @mailer_method = method_name
+  end
+
+  def call(context)
+    mailer_klass.send(mailer_method, *context)
     [:ok, context]
   end
 end
-
 
 class IntakeMailer
   def self.receipt(inquiry:)
@@ -31,8 +36,12 @@ end
 inquiry = Map.new(id: '123')
 
 # Let's try composition
+sequence = ChargeIntakeFee \
+           | Interactors.new do |context|
+               IntakeMailer.receipt(inquiry: context[:inquiry])
+               [:ok, context]
+             end
 
-sequence = (ChargeIntakeFee | SendReceipt)
 puts sequence.inspect
 puts sequence.interactions.inspect
 
