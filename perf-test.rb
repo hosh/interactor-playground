@@ -43,16 +43,26 @@ def functional_failure
   | FunctionalNoOp
 end
 
+def functional_interactions_0
+  FunctionalNoOp | FunctionalNoOp
+end
+
+def functional_failure_0
+  FunctionalNoOp | FunctionalFailureOp
+end
+
 class FunctionalController
-  def self.successful_action
-    Kase.kase functional_interactions.call do
+  def self.successful_action(simple:)
+    interactions = simple ? functional_interactions_0 : functional_interactions
+    Kase.kase interactions.call do
       on(:ok)    { |context| context }
       on(:error) { |reason| report_error(reason) }
     end
   end
 
-  def self.failing_action
-    Kase.kase functional_failure.call do
+  def self.failing_action(simple:)
+    interactions = simple ? functional_failure_0 : functional_failure
+    Kase.kase interactions.call do
       on(:ok)    { |context| context }
       on(:error) { |reason| report_error(reason) }
     end
@@ -78,9 +88,19 @@ class FailureInteractor
   end
 end
 
+class SimpleNoOpOrganizer
+  include Interactor::Organizer
+  organize NoOpInteractor, NoOpInteractor
+end
+
 class NoOpOrganizer
   include Interactor::Organizer
   organize NoOpInteractor, NoOpInteractor, NoOpInteractor, NoOpInteractor, NoOpInteractor, NoOpInteractor, NoOpInteractor, NoOpInteractor, NoOpInteractor, NoOpInteractor
+end
+
+class SimpleFailureOrganizer
+  include Interactor::Organizer
+  organize NoOpInteractor, FailureInteractor
 end
 
 class FailureOrganizer
@@ -89,13 +109,15 @@ class FailureOrganizer
 end
 
 class OOPController
-  def self.successful_action
-    result = NoOpOrganizer.call
+  def self.successful_action(simple:)
+    interactor = simple ? SimpleNoOpOrganizer : NoOpOrganizer
+    result = interactor.call
     report_error(result.error) unless result.success?
   end
 
-  def self.failing_action
-    result = FailureOrganizer.call
+  def self.failing_action(simple:)
+    interactor = simple ? SimpleFailureOrganizer : FailureOrganizer
+    result = interactor.call
     report_error(result.error) unless result.success?
   end
 
@@ -105,19 +127,16 @@ class OOPController
 end
 
 
-puts "========"
-puts "NoOp interactors chained 10, N=#{N}"
+puts "N = #{N}"
 # Tries to minimize garbage collection effects
 # http://ruby-doc.org/stdlib-2.3.0/libdoc/benchmark/rdoc/Benchmark.html#method-c-bmbm
-Benchmark.bmbm(15) do |x|
-  x.report('collective_idea') { N.times { OOPController.successful_action } }
-  x.report('functional')      { N.times { FunctionalController.successful_action } }
-end
-
-
-puts "========"
-puts "NoOp + FailureOp (5th) interactors chained 10, N=#{N}"
-Benchmark.bmbm(15) do |x|
-  x.report('collective_idea') { N.times { OOPController.failing_action } }
-  x.report('functional')      { N.times { FunctionalController.failing_action } }
+Benchmark.bmbm(27) do |x|
+  x.report('collective_idea x2')         { N.times { OOPController.successful_action(simple: true) } }
+  x.report('functional x2')              { N.times { FunctionalController.successful_action(simple: true) } }
+  x.report('collective_idea x10')        { N.times { OOPController.successful_action(simple: false) } }
+  x.report('functional x10')             { N.times { FunctionalController.successful_action(simple: false) } }
+  x.report('collective_idea [fail] x2')  { N.times { OOPController.failing_action(simple: false) } }
+  x.report('functional [fail] x2')       { N.times { FunctionalController.failing_action(simple: false) } }
+  x.report('collective_idea [fail] x10') { N.times { OOPController.failing_action(simple: false) } }
+  x.report('functional [fail] x10')      { N.times { FunctionalController.failing_action(simple: false) } }
 end
