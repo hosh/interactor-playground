@@ -1,13 +1,15 @@
+require 'active_support'
 require 'rlet'
-require 'interactor'
+require 'functional_interactor'
 require 'kase'
 require 'map'
+require 'ap'
 
 class ChargeIntakeFee
-  include Interactor
+  include FunctionalInteractor
 
   def call(context = {})
-    return [:error, "Invalid!"] if context[:invalid]
+    return [:error, "Invalid!"] if context[:inquiry][:invalid]
     puts "[charge_intake_fee] execute #{context[:inquiry].id}"
     [:ok, context]
   end
@@ -30,7 +32,7 @@ def charge(inquiry)
 
   Kase.kase sequence.call(inquiry: inquiry) do
     on(:ok)    { |_| puts "Thank you" }
-    on(:error) { |reason| puts "Error: #{reason}" }
+    on(:error) { |reason| puts "Returned Error: #{reason}" }
   end
 end
 

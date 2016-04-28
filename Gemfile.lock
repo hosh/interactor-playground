@@ -1,17 +1,8 @@
-GIT
-  remote: git://github.com/hosh/interactor.git
-  revision: 1e9335b0af0a88edc69fba1ce9391fcb7af84acc
-  branch: hosh/experiment-composability
+PATH
+  remote: ../functional_interactor
   specs:
-    interactor (3.1.0)
+    functional_interactor (0.0.1)
       activesupport (~> 4.2)
-
-GIT
-  remote: git://github.com/hosh/kase.git
-  revision: b7cac1c481a55677121c1afa435e8aef3f4f86cb
-  branch: hosh/caller-experiment
-  specs:
-    kase (0.1.0)
 
 GEM
   remote: https://rubygems.org/
@@ -22,8 +13,11 @@ GEM
       minitest (~> 5.1)
       thread_safe (~> 0.3, >= 0.3.4)
       tzinfo (~> 1.1)
+    awesome_print (1.6.1)
     i18n (0.7.0)
+    interactor (3.1.0)
     json (1.8.3)
+    kase (0.1.3)
     map (6.6.0)
     minitest (5.8.4)
     rlet (0.8.0)
@@ -35,8 +29,10 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  interactor!
-  kase!
+  awesome_print
+  functional_interactor!
+  interactor (~> 3.0)
+  kase (= 0.1.3)
   map
   rlet
 
