@@ -1,5 +1,7 @@
-PATH
-  remote: ../functional_interactor
+GIT
+  remote: git://github.com/hosh/interactor.git
+  revision: 7ab90a0c35c21633165ff10336c4c3cd60cf9149
+  branch: hosh/experiment-composability
   specs:
     functional_interactor (0.0.1)
       activesupport (~> 4.2)

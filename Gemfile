@@ -1,8 +1,8 @@
 source 'https://rubygems.org'
 
-gem 'functional_interactor', path: '../functional_interactor'
 gem "interactor", "~> 3.0"
-#gem 'interactor', github: 'hosh/interactor', branch: 'hosh/experiment-composability'
+#gem 'functional_interactor', path: '../functional_interactor'
+gem 'functional_interactor', github: 'hosh/interactor', branch: 'hosh/experiment-composability'
 
 gem 'rlet'
 #gem 'kase', path: '../kase'
